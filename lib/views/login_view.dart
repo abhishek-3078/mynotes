@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:developer' as devtools show log;
+import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/utilities/show_error_dialog.dart';
+
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
@@ -91,13 +93,19 @@ class _LoginViewState extends State<LoginView> {
                            password: password,
                            );
           if (!context.mounted) return;
-           Navigator.of(context).pushNamedAndRemoveUntil('/notes/', (route) => false,);
+           Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route) => false,);
                 } on FirebaseAuthException catch (e) {
                   if (e.code == "INVALID_LOGIN_CREDENTIALS") {
-                    devtools.log("wrong happended");
+                     if (!context.mounted) return;
+                    await showErrorDialog(context, "User not found");
                   } else {
-                    devtools.log(e.code);
+                   
+                     if (!context.mounted) return;
+                    await showErrorDialog(context, e.code);
                   }
+                }catch(e){
+                  await showErrorDialog(context, 
+                  e.toString());
                 }
               },
               child: const Text('Login'),
@@ -105,7 +113,7 @@ class _LoginViewState extends State<LoginView> {
             TextButton(
               onPressed: () {
                 Navigator.of(context)
-                    .pushNamedAndRemoveUntil('/register', (route) => false);
+                    .pushNamedAndRemoveUntil(registerRoute, (route) => false);
               },
               child: const Text('Not Registered yet? Register here!'),
             )
@@ -115,3 +123,5 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 }
+
+
