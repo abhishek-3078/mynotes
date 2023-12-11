@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -35,30 +36,30 @@ class _LoginViewState extends State<LoginView> {
       body: Container(
         height: 400,
         margin: const EdgeInsets.all(12.0),
-        padding: const EdgeInsets.only(left: 10,right: 10,top:30),
-        decoration:  BoxDecoration(
+        padding: const EdgeInsets.only(left: 10, right: 10, top: 30),
+        decoration: BoxDecoration(
           color: Colors.white,
-          border:  Border.all(
-                      color: const Color.fromARGB(102, 69, 76, 74),
-                      width: 1.0,
-                      style: BorderStyle.solid),
+          border: Border.all(
+              color: const Color.fromARGB(102, 69, 76, 74),
+              width: 1.0,
+              style: BorderStyle.solid),
           borderRadius: BorderRadius.circular(10.0),
-          boxShadow:const [
-           BoxShadow(
-                      color: Color.fromARGB(255, 73, 77, 73),
-                      offset:  Offset(
-                        5.0,
-                        5.0,
-                      ),
-                      blurRadius: 10.0,
-                      spreadRadius: 7.0,
-                    ), //BoxShadow
-                    BoxShadow(
-                      color: Colors.white,
-                      offset: Offset(0.0, 0.0),
-                      blurRadius: 0.0,
-                      spreadRadius: 0.0,
-                    ), 
+          boxShadow: const [
+            BoxShadow(
+              color: Color.fromARGB(255, 73, 77, 73),
+              offset: Offset(
+                5.0,
+                5.0,
+              ),
+              blurRadius: 10.0,
+              spreadRadius: 7.0,
+            ), //BoxShadow
+            BoxShadow(
+              color: Colors.white,
+              offset: Offset(0.0, 0.0),
+              blurRadius: 0.0,
+              spreadRadius: 0.0,
+            ),
           ],
         ),
         child: Column(
@@ -69,10 +70,9 @@ class _LoginViewState extends State<LoginView> {
               autocorrect: false,
               keyboardType: TextInputType.emailAddress,
               style: const TextStyle(fontSize: 18.0),
-              decoration:
-                  const InputDecoration(hintText: 'Enter your Email here',
-                  
-                  ),
+              decoration: const InputDecoration(
+                hintText: 'Enter your Email here',
+              ),
             ),
             TextField(
               controller: _password,
@@ -87,26 +87,24 @@ class _LoginViewState extends State<LoginView> {
                 final email = _email.text;
                 final password = _password.text;
                 try {
-         await FirebaseAuth.instance
-                      .signInWithEmailAndPassword(
-                          email: email,
-                           password: password,
-                           );
-          if (!context.mounted) return;
-           Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route) => false,);
-                } on FirebaseAuthException catch (e) {
-                  if (e.code == "INVALID_LOGIN_CREDENTIALS") {
-                     if (!context.mounted) return;
-                    await showErrorDialog(context, "User not found");
+                  await AuthService.firebase().login(email: email, password: password);
+                  final user = AuthService.firebase().currentUser;
+                  if (user?.isEmailVerified ?? false) {
+                    if (!context.mounted) return;
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      notesRoute,
+                      (route) => false,
+                    );
                   } else {
-                   
-                     if (!context.mounted) return;
-                    await showErrorDialog(context, e.code);
+                    if (!context.mounted) return;
+           Navigator.of(context).pushNamedAndRemoveUntil(verifyEmailRoute, (route) => false,);
                   }
-                }catch(e){
-                  await showErrorDialog(context, 
-                  e.toString());
+                } on InvalidLoginCredentialsAuthException{
+                  await showErrorDialog(context, "User not found");
+                } on GenericAuthException{
+                     await showErrorDialog(context, 'Authentication Error');
                 }
+                
               },
               child: const Text('Login'),
             ),
@@ -123,5 +121,3 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 }
-
-

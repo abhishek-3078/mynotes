@@ -1,8 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// ignore_for_file: use_build_context_synchronously
+
+
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
+import 'package:mynotes/utilities/show_error_dialog.dart';
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
 
@@ -57,21 +62,19 @@ class _RegisterViewState extends State<RegisterView> {
               final password=_password.text;
               try{
     
-              
-              final userCredential=await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                email: email,
-                password: password);
-        
+              // final user=AuthService.firebase().currentUser;
+              final userCredential=await AuthService.firebase().createUser(email: email, password: password);
+              AuthService.firebase().sendEmailVerification();    
               devtools.log(userCredential.toString());
-              } on FirebaseAuthException catch (e){
-                if(e.code=="weak password"){
-                  devtools.log("weak password");
-                }else if(e.code=="email-already-in-use"){
-                  devtools.log("email is already in use");
-                }else{
-                devtools.log(e.code);
-                }
+              Navigator.of(context).pushNamed(verifyEmailRoute);
+              } on WeakPasswordAuthException{
+                await showErrorDialog(context, "Weak Password");
+              }  on EmailAlreadyInUseAuthException {
+                await showErrorDialog(context, "Email already in use");
+              } on GenericAuthException {
+                  await showErrorDialog(context,"Failed to register");
               }
+              
               },child: const Text('Register') ,),
               TextButton(onPressed: (){
                 Navigator.of(context).pushNamedAndRemoveUntil(loginRoute,(route)=>false);
