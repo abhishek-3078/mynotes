@@ -130,6 +130,7 @@ class NotesService {
   }
 
   Future<DatabaseNote>createNote({required DatabaseUser owner}) async{
+    await _ensureDbIsOpen();
     final db=_getDatabaseOThrow();
 
   //make sure owner exist in db
@@ -138,14 +139,14 @@ class NotesService {
       throw CouldNotFindUser();
     }
 
-    const text='';
 
+    const text='';
+    
     final noteId=await db.insert(noteTable,{
       userIdColumn:owner.id,
       textColumn:text,
       isSyncWithCloudColumn:1,
     });
-
     final note=DatabaseNote(
       id:noteId,
       userId:owner.id,
@@ -155,6 +156,7 @@ class NotesService {
 
     _notes.add(note);
     _notesStreamController.add(_notes);
+    print(note);
     return note;
 
   }
@@ -183,6 +185,7 @@ class NotesService {
   }
 
   Future<DatabaseUser> getUser({required String email}) async{
+    _ensureDbIsOpen();
      final db = _getDatabaseOThrow();
     final results = await db.query(
       userTable,
@@ -240,6 +243,7 @@ class NotesService {
     }
   }
   Future<void> open() async {
+
     if (_db != null) {
       throw DatabaseALreadyOpenException();
     }
@@ -252,7 +256,6 @@ class NotesService {
       await db.execute(createUserTable);
 
       await db.execute(createNoteTable); 
-
       await _cacheNotes();
     } on MissingPlatformDirectoryException {
       throw UnableToGetDOcumentDirectory();
@@ -320,7 +323,7 @@ const idColumn = "id";
 const emailColumn = "email";
 const userIdColumn = "user_id";
 const textColumn = "text";
-const isSyncWithCloudColumn = "is_sync_with_cloud";
+const isSyncWithCloudColumn = "is_synced_with_cloud";
 const userTable = "user";
 const noteTable = "note";
 const createUserTable = '''
@@ -331,7 +334,7 @@ const createUserTable = '''
               );''';
 
 const createNoteTable = '''
-      CREATE TABLE IF NOT EXISTS "notes" (
+      CREATE TABLE IF NOT EXISTS "note" (
         "id"	INTEGER NOT NULL,
         "user_id"	INTEGER NOT NULL,
         "text"	TEXT,
