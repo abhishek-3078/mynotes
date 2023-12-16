@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
@@ -35,7 +34,7 @@ class _NotesViewState extends State<NotesView> {
         actions: [
           IconButton(
               onPressed: () {
-                Navigator.of(context).pushNamed(newNoteRoute);
+                Navigator.of(context).pushNamed(createUpdateNoteRoute);
               },
               icon: const Icon(Icons.add)),
           PopupMenuButton<MenuAction>(
@@ -82,8 +81,13 @@ class _NotesViewState extends State<NotesView> {
                                 snapshot.data as List<DatabaseNote>;
                             return NotesListView(
                               notes: allNotes,
-                              onDeleteNote: (note)async{
+                              onDeleteNote: (note) async {
                                 await _notesService.deleteNote(id: note.id);
+                              },
+                              onTap: (note) {
+                                Navigator.of(context).pushNamed(
+                                    createUpdateNoteRoute,
+                                    arguments: note);
                               },
                             );
                           } else {
@@ -101,4 +105,3 @@ class _NotesViewState extends State<NotesView> {
     );
   }
 }
-
