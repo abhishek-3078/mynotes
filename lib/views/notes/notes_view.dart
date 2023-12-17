@@ -16,7 +16,7 @@ class NotesView extends StatefulWidget {
 
 class _NotesViewState extends State<NotesView> {
   // ! =>  "null-aware access" operator.
-  String get userEmail => AuthService.firebase().currentUser!.email!;
+  String get userEmail => AuthService.firebase().currentUser!.email;
   late final NotesService _notesService;
 
   @override
@@ -49,7 +49,7 @@ class _NotesViewState extends State<NotesView> {
                         .pushNamedAndRemoveUntil(loginRoute, (route) => false);
                   }
                   // devtools.log(shouldLogout.toString());
-                  break;print("adfa");
+                  break;
                 default:
                   
               }
