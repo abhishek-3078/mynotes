@@ -49,9 +49,9 @@ class _NotesViewState extends State<NotesView> {
                         .pushNamedAndRemoveUntil(loginRoute, (route) => false);
                   }
                   // devtools.log(shouldLogout.toString());
-                  break;
+                  break;print("adfa");
                 default:
-                  print("adfa");
+                  
               }
             },
             itemBuilder: (context) {
@@ -76,6 +76,7 @@ class _NotesViewState extends State<NotesView> {
                       switch (snapshot.connectionState) {
                         case ConnectionState.waiting:
                         case ConnectionState.active:
+                          
                           if (snapshot.hasData) {
                             final allNotes =
                                 snapshot.data as List<DatabaseNote>;
@@ -90,8 +91,11 @@ class _NotesViewState extends State<NotesView> {
                                     arguments: note);
                               },
                             );
-                          } else {
-                            return const Text("waiting for motes");
+                          }
+                          else if (snapshot.hasError) {
+          return Text("Error: ${snapshot.error}");
+        }  else {
+                            return  Text("waiting for notes $userEmail");
                           }
 
                         default:

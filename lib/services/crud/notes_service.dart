@@ -172,7 +172,6 @@ class NotesService {
 
     _notes.add(note);
     _notesStreamController.add(_notes);
-    print(note);
     return note;
   }
 
@@ -199,7 +198,7 @@ class NotesService {
   }
 
   Future<DatabaseUser> getUser({required String email}) async {
-    _ensureDbIsOpen();
+    await _ensureDbIsOpen();
     final db = _getDatabaseOThrow();
     final results = await db.query(
       userTable,
