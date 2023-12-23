@@ -78,7 +78,8 @@ class FirebaseAuthProvider implements AuthProvider {
         throw UserNotLoggedInAuthException();
       }
     } on FirebaseAuthException catch (e) {
-      if (e.code == "INVALID_LOGIN_CREDENTIALS") {
+      // print("error is : ${e.code}");78
+      if (e.code == "invalid-credential") {
         throw InvalidLoginCredentialsAuthException();
       } else {
         throw GenericAuthException();
