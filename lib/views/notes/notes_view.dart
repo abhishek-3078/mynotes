@@ -98,7 +98,10 @@ class _NotesViewState extends State<NotesView> {
                           else if (snapshot.hasError) {
           return Text("Error: ${snapshot.error}");
         }  else {
-                            return  Text("waiting for notes ");
+                            return  const Center(
+                                child:  CircularProgressIndicator(),
+                              
+                            );
                           }
 
                         default:
