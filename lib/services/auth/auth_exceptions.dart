@@ -2,7 +2,8 @@
 class InvalidLoginCredentialsAuthException implements Exception{
   
 }
-
+class InvalidEmailAuthException implements Exception{}
+class UserNotFoundAuthException implements Exception{}
 //register
 class WeakPasswordAuthException implements Exception{
   
