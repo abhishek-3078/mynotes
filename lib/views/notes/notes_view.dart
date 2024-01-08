@@ -80,19 +80,24 @@ class _NotesViewState extends State<NotesView> {
                         case ConnectionState.active:
                           
                           if (snapshot.hasData) {
-                            print("Data: ${snapshot.data}");
+                            
                             final allNotes =
                                 snapshot.data as Iterable<CloudNote>;
-                            return NotesListView(
-                              notes: allNotes,
-                              onDeleteNote: (note) async {
-                                await _notesService.deleteNote(documentId: note.documentId);
-                              },
-                              onTap: (note) {
-                                Navigator.of(context).pushNamed(
-                                    createUpdateNoteRoute,
-                                    arguments: note);
-                              },
+                            return Container(
+                              decoration: BoxDecoration(
+                                color: Colors.blue.withAlpha(125)
+                              ),
+                              child: NotesListView(
+                                notes: allNotes,
+                                onDeleteNote: (note) async {
+                                  await _notesService.deleteNote(documentId: note.documentId);
+                                },
+                                onTap: (note) {
+                                  Navigator.of(context).pushNamed(
+                                      createUpdateNoteRoute,
+                                      arguments: note);
+                                },
+                              ),
                             );
                           }
                           else if (snapshot.hasError) {

@@ -38,16 +38,14 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state)async {
-         if (state is AuthStateLoggedOut) {
-          
-            if (state.exception
-                is InvalidLoginCredentialsAuthException) {
-              await showErrorDialog(context, "Invalid Credentials");
-            } else if (state.exception is GenericAuthException) {
-              await showErrorDialog(context, 'Authentication Error');
-            }
+      listener: (context, state) async {
+        if (state is AuthStateLoggedOut) {
+          if (state.exception is InvalidLoginCredentialsAuthException) {
+            await showErrorDialog(context, "Invalid Credentials");
+          } else if (state.exception is GenericAuthException) {
+            await showErrorDialog(context, 'Authentication Error');
           }
+        }
       },
       child: Scaffold(
         backgroundColor: const Color.fromARGB(255, 202, 228, 234),
@@ -56,8 +54,8 @@ class _LoginViewState extends State<LoginView> {
           padding: const EdgeInsets.all(20.0),
           child: Container(
             height: 400,
-            margin: const EdgeInsets.only(top:60),
-            padding: const EdgeInsets.only(left: 13, right: 13, top:13.0),
+            margin: const EdgeInsets.only(top: 60),
+            padding: const EdgeInsets.only(left: 13, right: 13, top: 13.0),
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border.all(
@@ -84,16 +82,29 @@ class _LoginViewState extends State<LoginView> {
               ],
             ),
             child: Column(
-              
+
               children: [
-                TextField(
-                  controller: _email,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  keyboardType: TextInputType.emailAddress,
-                  style: const TextStyle(fontSize: 18.0),
-                  decoration: const InputDecoration(
-                    hintText: 'Enter your email here',
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0,vertical: 8.0),
+                  child: TextField(
+                    
+                    controller: _email,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    keyboardType: TextInputType.emailAddress,
+                    style: const TextStyle(fontSize: 18.0),
+                    decoration: InputDecoration(
+                      hintText: 'Enter your email here',
+                
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                          color:
+                              Colors.grey, // Customize the default border color
+                          width: 1.0,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 TextField(
@@ -101,34 +112,43 @@ class _LoginViewState extends State<LoginView> {
                   obscureText: true,
                   enableSuggestions: false,
                   autocorrect: false,
-                  decoration:
-                      const InputDecoration(hintText: 'Enter your password here'),
+                  style: const TextStyle(fontSize:18.0),
+                  decoration:  InputDecoration(
+                      hintText: 'Enter your password here',
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(
+                        color:
+                            Colors.grey, // Customize the default border color
+                        width: 1.0,
+                      ),
+                    ),
+                  ),
                 ),
-                
-                  TextButton(
-                    onPressed: () async {
-                      final email = _email.text;
-                      final password = _password.text;
-                      context.read<AuthBloc>().add(AuthEventLogIn(
-                            email,
-                            password,
-                          ));
-                    },
-                    child: const Text('Login'),
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      
-                      context.read<AuthBloc>().add(const AuthEventForgotPassword());
-                    },
-                    child: const Text('I forgot my password'),
-                   
-                  ),
-
                 TextButton(
-
+                  onPressed: () async {
+                    final email = _email.text;
+                    final password = _password.text;
+                    context.read<AuthBloc>().add(AuthEventLogIn(
+                          email,
+                          password,
+                        ));
+                  },
+                  child: const Text('Login'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    context
+                        .read<AuthBloc>()
+                        .add(const AuthEventForgotPassword());
+                  },
+                  child: const Text('I forgot my password'),
+                ),
+                TextButton(
                   onPressed: () {
-                    context.read<AuthBloc>().add(const AuthEventShouldRegister());
+                    context
+                        .read<AuthBloc>()
+                        .add(const AuthEventShouldRegister());
                   },
                   child: const Text('Not Registered yet? Register here!'),
                 )
