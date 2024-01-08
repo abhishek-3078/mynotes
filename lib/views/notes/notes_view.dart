@@ -84,8 +84,8 @@ class _NotesViewState extends State<NotesView> {
                             final allNotes =
                                 snapshot.data as Iterable<CloudNote>;
                             return Container(
-                              decoration: BoxDecoration(
-                                color: Colors.blue.withAlpha(125)
+                              decoration: const BoxDecoration(
+                                color:  Color.fromARGB(255, 202, 228, 234)
                               ),
                               child: NotesListView(
                                 notes: allNotes,
